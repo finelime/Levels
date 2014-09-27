@@ -1,0 +1,11 @@
+name: Levels
+main: com.pwncraftpvp.levels.core.Main
+description: Levels!
+author: JjPwN1
+version: 1.0
+depend: [Vault]
+commands:
+   levels:
+      description: Levels main command
+   l:
+      description: Levels main command
