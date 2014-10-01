@@ -4,23 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.CropState;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.material.Crops;
 
 import com.pwncraftpvp.levels.utils.Utils;
 
 public class Events implements Listener{
 	
-	Main main = Main.getInstance();
+	static Main main = Main.getInstance();
 	private String gray = ChatColor.GRAY + "";
 	private String yellow = ChatColor.YELLOW + "";
 	
@@ -33,8 +30,27 @@ public class Events implements Listener{
 		if(lplayer.getUsername() == null || !lplayer.getUsername().equalsIgnoreCase(player.getName())){
 			lplayer.setUsername(player.getName());
 		}
+		
 		main.getServer().getScheduler().scheduleSyncDelayedTask(main, new Runnable(){
 			public void run(){
+				if(lplayer.isNew() == true){
+					player.getInventory().setHelmet(null);
+					player.getInventory().setChestplate(null);
+					player.getInventory().setLeggings(null);
+					player.getInventory().setBoots(null);
+					player.getInventory().clear();
+					
+					boolean wasOp = player.isOp();
+					player.setOp(true);
+					try{
+						player.performCommand("kit beginner");
+					}catch (Exception ex){
+						player.setOp(wasOp);
+					}
+					player.setOp(wasOp);
+					lplayer.setNew(false);
+				}
+				
 				boolean gotPaid = false;
 				if(Utils.getTopThree().contains(player.getName())){
 					if(lplayer.canGetTopPayment() == true){
@@ -68,65 +84,71 @@ public class Events implements Listener{
 		}
 	}
 	
+	/*
+	 * BlockMine plugin now handles Mining level
+	 * 
 	@EventHandler
 	public void blockBreak(BlockBreakEvent event){
 		if(event.getPlayer() != null){
 			Player player = event.getPlayer();
 			LPlayer lplayer = new LPlayer(player);
 			
-			if(event.getBlock().getType() == Material.STONE || event.getBlock().getType() == Material.COAL_ORE || event.getBlock().getType() == Material.LAPIS_ORE ||
-					event.getBlock().getType() == Material.REDSTONE_ORE || event.getBlock().getType() == Material.IRON_ORE || event.getBlock().getType() == Material.GOLD_ORE ||
-					event.getBlock().getType() == Material.DIAMOND_ORE || event.getBlock().getType() == Material.CROPS){
-				
-				double x,y,z;
-				x = event.getBlock().getLocation().getX();
-				y = event.getBlock().getLocation().getY();
-				z = event.getBlock().getLocation().getZ();
-				
-				boolean canAddXP = true;
-				for(MinedBlock b : minedBlocks){
-					if(x == b.getX() && y == b.getY() && z == b.getZ()){
-						canAddXP = false;
-						break;
-					}
-				}
-				
-				if(canAddXP == true){
-					MinedBlock block = new MinedBlock(x, y, z);
-					if(event.getBlock().getType() == Material.STONE){
-						lplayer.addSkillXP(Skill.MINING, 0.2);
-						minedBlocks.add(block);
-					}else if(event.getBlock().getType() == Material.COAL_ORE || event.getBlock().getType() == Material.LAPIS_ORE || event.getBlock().getType() == Material.REDSTONE_ORE){
-						lplayer.addSkillXP(Skill.MINING, 0.75);
-						minedBlocks.add(block);
-					}else if(event.getBlock().getType() == Material.IRON_ORE){
-						lplayer.addSkillXP(Skill.MINING, 2);
-						minedBlocks.add(block);
-					}else if(event.getBlock().getType() == Material.GOLD_ORE){
-						lplayer.addSkillXP(Skill.MINING, 1);
-						minedBlocks.add(block);
-					}else if(event.getBlock().getType() == Material.DIAMOND_ORE){
-						lplayer.addSkillXP(Skill.MINING, 10);
-						minedBlocks.add(block);
-					}else if(event.getBlock().getType() == Material.CROPS){
-						Crops crop = (Crops) event.getBlock().getState().getData();
-						if(crop.getState() == CropState.RIPE){
-							lplayer.addSkillXP(Skill.FARMING, 1);
-						}else if(crop.getState() == CropState.VERY_TALL){
-							lplayer.addSkillXP(Skill.FARMING, 0.5);
-						}else if(crop.getState() == CropState.TALL){
-							lplayer.addSkillXP(Skill.FARMING, 0.35);
-						}else if(crop.getState() == CropState.MEDIUM){
-							lplayer.addSkillXP(Skill.FARMING, 0.2);
-						}else if(crop.getState() == CropState.SMALL){
-							lplayer.addSkillXP(Skill.FARMING, 0.05);
+			if(Utils.canBreakHere(player, event.getBlock().getLocation()) == true){
+				if(event.getBlock().getType() == Material.STONE || event.getBlock().getType() == Material.COAL_ORE || event.getBlock().getType() == Material.LAPIS_ORE ||
+						event.getBlock().getType() == Material.REDSTONE_ORE || event.getBlock().getType() == Material.IRON_ORE || event.getBlock().getType() == Material.GOLD_ORE ||
+						event.getBlock().getType() == Material.DIAMOND_ORE || event.getBlock().getType() == Material.CROPS){
+					
+					double x,y,z;
+					x = event.getBlock().getLocation().getX();
+					y = event.getBlock().getLocation().getY();
+					z = event.getBlock().getLocation().getZ();
+					
+					boolean canAddXP = true;
+					for(MinedBlock b : minedBlocks){
+						if(x == b.getX() && y == b.getY() && z == b.getZ()){
+							canAddXP = false;
+							break;
 						}
-						minedBlocks.add(block);
+					}
+					
+					if(canAddXP == true){
+						MinedBlock block = new MinedBlock(x, y, z);
+						if(event.getBlock().getType() == Material.STONE){
+							lplayer.addSkillXP(Skill.MINING, 0.2);
+							minedBlocks.add(block);
+						}else if(event.getBlock().getType() == Material.COAL_ORE || event.getBlock().getType() == Material.LAPIS_ORE || event.getBlock().getType() == Material.REDSTONE_ORE){
+							lplayer.addSkillXP(Skill.MINING, 0.75);
+							minedBlocks.add(block);
+						}else if(event.getBlock().getType() == Material.IRON_ORE){
+							lplayer.addSkillXP(Skill.MINING, 2);
+							minedBlocks.add(block);
+						}else if(event.getBlock().getType() == Material.GOLD_ORE){
+							lplayer.addSkillXP(Skill.MINING, 1);
+							minedBlocks.add(block);
+						}else if(event.getBlock().getType() == Material.DIAMOND_ORE){
+							lplayer.addSkillXP(Skill.MINING, 10);
+							minedBlocks.add(block);
+						}else if(event.getBlock().getType() == Material.CROPS){
+							Crops crop = (Crops) event.getBlock().getState().getData();
+							if(crop.getState() == CropState.RIPE){
+								lplayer.addSkillXP(Skill.FARMING, 1);
+							}else if(crop.getState() == CropState.VERY_TALL){
+								lplayer.addSkillXP(Skill.FARMING, 0.5);
+							}else if(crop.getState() == CropState.TALL){
+								lplayer.addSkillXP(Skill.FARMING, 0.35);
+							}else if(crop.getState() == CropState.MEDIUM){
+								lplayer.addSkillXP(Skill.FARMING, 0.2);
+							}else if(crop.getState() == CropState.SMALL){
+								lplayer.addSkillXP(Skill.FARMING, 0.05);
+							}
+							minedBlocks.add(block);
+						}
 					}
 				}
 			}
 		}
 	}
+	*/
 	
 	@EventHandler
 	public void playerFish(PlayerFishEvent event){

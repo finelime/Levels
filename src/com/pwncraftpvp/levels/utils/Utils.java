@@ -12,15 +12,44 @@ import java.util.TreeMap;
 import net.milkbowl.vault.economy.Economy;
 
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.pwncraftpvp.levels.core.LPlayer;
 import com.pwncraftpvp.levels.core.Main;
 import com.pwncraftpvp.levels.core.Skill;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class Utils {
 	
 	static Main main = Main.getInstance();
+	
+	/**
+	 * Get the WorldGuardPlugin
+	 * @return - The WorldGuardPlugin
+	 */
+	public static WorldGuardPlugin getWorldGuard() {
+	    Plugin plugin = main.getServer().getPluginManager().getPlugin("WorldGuard");
+	 
+	    // WorldGuard may not be loaded
+	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+	        return null; // Maybe you want throw an exception instead
+	    }
+	 
+	    return (WorldGuardPlugin) plugin;
+	}
+	
+	/**
+	 * Check if a player can build at the location	
+	 * @param player - The player to perform checks on
+	 * @return - True or false depending on if the player can build at the location or not
+	 */
+	public static boolean canBreakHere(Player player, Location loc){
+		return getWorldGuard().canBuild(player, loc);
+	}
 	
 	/**
 	 * Set up the plugin's economy for use
@@ -125,6 +154,41 @@ public class Utils {
 	public static void setSkillPayment(int amount){
 		main.getConfig().set("payments.skills", amount);
 		main.saveConfig();
+	}
+	
+	/**
+	 * Get a progress bar based on a percent
+	 * @param percent - The percent to get a progress bar of
+	 * @return A string with the progress bar
+	 */
+	public static String getProgressBar(float percent){
+		int amount = (int) percent / 10;
+		String bar = getBars(amount);
+		return bar;
+	}
+	
+	/**
+	 * Get a bar with green and gray colors
+	 * @param green - The amount of green colors
+	 * @return A string with the bar
+	 */
+	public static String getBars(int green){
+		green = (green * 2);
+		String bars = "";
+		int gray = 20 - green;
+		int greenAmnt,grayAmnt;
+		greenAmnt = 0;
+		grayAmnt = 0;
+		for(int x = 1; x <= 20; x++){
+			if(greenAmnt != green){
+				bars = bars + ChatColor.GREEN + UTFUtils.getBar();
+				greenAmnt++;
+			}else if(grayAmnt != gray){
+				bars = bars + ChatColor.GRAY + UTFUtils.getBar();
+				grayAmnt++;
+			}
+		}
+		return bars;
 	}
 	
 	/**

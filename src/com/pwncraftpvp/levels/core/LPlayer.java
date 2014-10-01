@@ -78,6 +78,30 @@ public class LPlayer {
 	}
 	
 	/**
+	 * Check if the player is new
+	 * @return True if the player is new, false if the player is not new
+	 */
+	public boolean isNew(){
+		if(this.getConfig().getBoolean("isNew") == false){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	/**
+	 * Set if the player is new
+	 * @param set - True means they aren't new, false means they are new
+	 */
+	public void setNew(boolean set){
+		if(set == true){
+			this.setConfigValue("isNew", false);
+		}else if(set == false){
+			this.setConfigValue("isNew", true);
+		}
+	}
+	
+	/**
 	 * Get the player's username
 	 * @return The player's username
 	 */
@@ -123,8 +147,11 @@ public class LPlayer {
 	public void sendCommandHelp(){
 		this.sendMessageHeader("Command Help");
 		this.sendMessage(yellow + "/l stats " + gray + "- Get your level stats!");
-		this.sendMessage(yellow + "/l top " + gray + "- Get the top list!");
+		this.sendMessage(yellow + "/l top " + gray + "- Get the overall top list!");
 		this.sendMessage(yellow + "/l top <skill> " + gray + "- Get a skill's top list!");
+		for(Skill s : Skill.values()){
+			player.sendMessage("  " + ChatColor.GOLD + UTFUtils.getArrow() + " " + gray + Utils.getSkillName(s));
+		}
 		if(player.isOp() == true){
 			this.sendMessage(yellow + "/l setlevel <player> <skill> <level> " + gray + "- Set a player's skill level!");
 			this.sendMessage(yellow + "/l setpayment overall <amount> " + gray + "- Set the top payment!");
@@ -225,7 +252,7 @@ public class LPlayer {
 			int maxxp = this.getXPToNextLevel(s);
 			this.sendMessage(yellow + Utils.getSkillName(s));
 			player.sendMessage(gray + "    Level: " + yellow + level);
-			player.sendMessage(gray + "    XP: " + yellow + Utils.getPercent(xp, maxxp) + gray + "%");
+			player.sendMessage(gray + "    Progress: " + yellow + Utils.getProgressBar(Utils.getPercent(xp, maxxp)));
 		}
 		int totalLevels = this.getOverallLevel();
 		this.sendMessage(gray + "Overall Level: " + yellow + totalLevels);
@@ -283,7 +310,7 @@ public class LPlayer {
 	    while (it.hasNext()) {
 	    	if(current <= 9){
 		        Map.Entry pairs = (Map.Entry)it.next();
-			    this.sendMessage(gray + current + ". " + yellow + pairs.getKey() + gray + " - Level: " + yellow + pairs.getValue());
+			    this.sendMessage(gray + current + ". " + yellow + pairs.getKey() + gray + " - " + Utils.getSkillName(skill) + " Level: " + yellow + pairs.getValue());
 		        it.remove();
 		        current++;
 	    	}else{
