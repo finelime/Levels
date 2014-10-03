@@ -118,6 +118,38 @@ public class LPlayer {
 	}
 	
 	/**
+	 * Get the player's saved level
+	 * @return The player's saved level
+	 */
+	public int getSavedLevel(){
+		return this.getConfig().getInt("saved.level");
+	}
+	
+	/**
+	 * Set the player's saved level
+	 * @return The player's saved level
+	 */
+	public void setSavedLevel(int level){
+		this.setConfigValue("saved.level", level);
+	}
+	
+	/**
+	 * Get the player's saved xp
+	 * @return The player's saved xp
+	 */
+	public float getSavedXP(){
+		return this.getConfig().getInt("saved.xp");
+	}
+	
+	/**
+	 * Set the player's saved xp
+	 * @return The player's saved xp
+	 */
+	public void setSavedXP(float xp){
+		this.setConfigValue("saved.xp", xp);
+	}
+	
+	/**
 	 * Send a message header to the player
 	 * @param header - The header to be sent
 	 */

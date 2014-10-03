@@ -12,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.pwncraftpvp.levels.utils.Utils;
 
@@ -31,6 +33,9 @@ public class Events implements Listener{
 			lplayer.setUsername(player.getName());
 		}
 		
+		/*
+		 * Fixes for things on Prison that are broken (for some unknown reasons)
+		 */
 		main.getServer().getScheduler().scheduleSyncDelayedTask(main, new Runnable(){
 			public void run(){
 				if(lplayer.isNew() == true){
@@ -71,8 +76,27 @@ public class Events implements Listener{
 				if(gotPaid == true){
 					lplayer.setLastTopPayment();
 				}
+				
+				player.setLevel(lplayer.getSavedLevel());
+				player.setExp(lplayer.getSavedXP());
 			}
 		}, 30);
+	}
+	
+	@EventHandler
+	public void playerQuit(PlayerQuitEvent event){
+		Player player = event.getPlayer();
+		LPlayer lplayer = new LPlayer(player);
+		lplayer.setSavedLevel(player.getLevel());
+		lplayer.setSavedXP(player.getExp());
+	}
+	
+	@EventHandler
+	public void playerKick(PlayerKickEvent event){
+		Player player = event.getPlayer();
+		LPlayer lplayer = new LPlayer(player);
+		lplayer.setSavedLevel(player.getLevel());
+		lplayer.setSavedXP(player.getExp());
 	}
 	
 	@EventHandler
