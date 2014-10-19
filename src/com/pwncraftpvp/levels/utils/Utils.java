@@ -259,5 +259,21 @@ public class Utils {
 		
 		return top;
 	}
-
+	
+	/**
+	 * Set the amount of money received upon leveling up
+	 * @param money - The amount of money to be received upon leveling up
+	 */
+	public static void setLevelUpMoney(int money){
+		main.getConfig().set("payments.levelup", money);
+		main.saveConfig();
+	}
+	
+	/**
+	 * Get the amount of money received upon leveling up
+	 * @return The amount of money received upon leveling up
+	 */
+	public static int getLevelUpMoney(){
+		return main.getConfig().getInt("payments.levelup");
+	}
 }

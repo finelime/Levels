@@ -101,6 +101,14 @@ public class Main extends JavaPlugin{
 								}else{
 									lplayer.sendError("You must enter a valid amount!");
 								}
+							}else if(args[1].equalsIgnoreCase("levelup")){
+								if(Utils.isInteger(args[2]) == true){
+									int amount = Integer.parseInt(args[2]);
+									Utils.setLevelUpMoney(amount);
+									lplayer.sendMessage("You have set the level up payment amount to $" + yellow + amount + gray + "!");
+								}else{
+									lplayer.sendError("You must enter a valid amount!");
+								}
 							}else{
 								lplayer.sendError("Usage: /l setpayment <overall/skill> <amount>");
 							}

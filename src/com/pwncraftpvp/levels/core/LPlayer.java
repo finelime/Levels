@@ -188,6 +188,7 @@ public class LPlayer {
 			this.sendMessage(yellow + "/l setlevel <player> <skill> <level> " + gray + "- Set a player's skill level!");
 			this.sendMessage(yellow + "/l setpayment overall <amount> " + gray + "- Set the top payment!");
 			this.sendMessage(yellow + "/l setpayment skill <amount> " + gray + "- Set the top payment!");
+			this.sendMessage(yellow + "/l setpayment levelup <amount> " + gray + "- Set the level up payment!");
 		}
 	}
 	
@@ -266,10 +267,13 @@ public class LPlayer {
 	 * Level up a skill
 	 * @param skill - The skill to level up
 	 */
+	@SuppressWarnings("deprecation")
 	public void levelUp(Skill skill){
 		this.setSkillLevel(skill, this.getSkillLevel(skill) + 1);
 		this.setSkillXP(skill, 0);
 		this.sendMessage("You have leveled up your " + yellow + Utils.getSkillName(skill) + gray + " skill to level " + yellow + this.getSkillLevel(skill) + gray + "!");
+		player.sendMessage(gray + "    + " + yellow + "$" + Utils.getLevelUpMoney());
+		main.econ.depositPlayer(player.getName(), Utils.getLevelUpMoney());
 		ParticleEffects.sendToLocation(ParticleEffects.GREEN_SPARKLE, player.getEyeLocation().subtract(0, .25, 0), .6F, .6F, .6F, 0F, 15);
 	}
 	
